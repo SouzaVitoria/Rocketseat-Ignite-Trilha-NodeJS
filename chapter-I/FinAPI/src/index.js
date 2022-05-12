@@ -43,7 +43,7 @@ app.post('/account', (req, res) => {
     statement: []
   })
 
-  res.status(201).send(customers)
+  res.status(201).send()
 })
 
 app.get('/statement', verifyIfExistsAccountCPF, (req, res) => {
@@ -102,6 +102,35 @@ app.get("/statement/date", verifyIfExistsAccountCPF, (req, res) => {
   return res.status(200).send(statement)
 })
 
+app.put("/account", verifyIfExistsAccountCPF, (req, res) => {
+  const { name } = req.body
+  const { customer } = req
 
+  customer.name = name
+
+  return res.status(200).send()
+})
+
+app.get("/account", verifyIfExistsAccountCPF, (req, res) => {
+  const { customer } = req
+
+  return res.status(200).send(customer)
+})
+
+app.get("/accounts", (req, res) => {
+  return res.status(200).send(customers)
+})
+
+app.delete("/account", verifyIfExistsAccountCPF, (req, res) => {
+  const { customer } = req
+  customers.splice(customer, 1)
+  return res.status(200).send(customers)
+})
+
+app.get("/balance", verifyIfExistsAccountCPF, (req, res) => {
+  const { customer } = req
+  const balance = getBalance(customer.statement)
+  return res.status(200).json(balance)
+})
 
 app.listen(3333, () => console.log('Running'))
