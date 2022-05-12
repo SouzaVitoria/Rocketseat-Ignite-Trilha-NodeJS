@@ -63,7 +63,7 @@ app.post('/deposit', verifyIfExistsAccountCPF, (req, res) => {
   const statementOperation = {
     description,
     amount,
-    created_at: new Date().toLocaleDateString('pt-br', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+    created_at: new Date().toDateString(),
     type: 'credit'
   }
 
@@ -91,5 +91,17 @@ app.post('/withdraw', verifyIfExistsAccountCPF, (req, res) => {
 
   return res.status(201).send()
 })
+
+app.get("/statement/date", verifyIfExistsAccountCPF, (req, res) => {
+  const { customer } = req
+  const { date } = req.query
+  const dateFormat = new Date(date + " 00:00")
+
+  const statement = customer.statement.filter((statement) => statement.created_at === new Date(dateFormat).toDateString())
+
+  return res.status(200).send(statement)
+})
+
+
 
 app.listen(3333, () => console.log('Running'))
