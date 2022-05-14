@@ -52,15 +52,27 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
   })
 
   response.status(201).send(user.todos)
-
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request
+  const { title, deadline } = request.body
+  const { id } = request.params
+
+  const todo = user.todos.find(todo => todo.id === id)
+  todo.title = title
+  todo.deadline = deadline
+
+  response.status(200).send()
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request
+  const { id } = request.params
+
+  const todo = user.todos.find(todo => todo.id === id)
+  todo.done = true
+  response.status(200).send()
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
