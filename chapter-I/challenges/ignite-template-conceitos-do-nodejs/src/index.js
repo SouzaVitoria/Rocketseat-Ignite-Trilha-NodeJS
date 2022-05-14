@@ -13,30 +13,32 @@ function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers
   const user = users.find(user => user.username === username)
 
-  if (!user) return response.status(404).send({ error: 'User not found' })
+  if (!user) return response.status(404).json({ error: 'User not found' })
 
   request.user = user
 
-  next()
+  return next()
 }
 
 app.post('/users', (request, response) => {
   const { name, username } = request.body
 
-  users.push({
+  const user = {
     id: uuidv4(),
     name,
     username,
     todos: []
-  })
+  }
 
-  response.status(201).send(users)
+  users.push(user)
+
+  return response.status(201).json(users)
 
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request
-  response.status(200).send(user.todos)
+  return response.json(user.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
@@ -51,7 +53,7 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
     created_at: new Date()
   })
 
-  response.status(201).send(user.todos)
+  return response.status(201).json(user.todos)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -63,7 +65,7 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   todo.title = title
   todo.deadline = deadline
 
-  response.status(200).send()
+  return response.status(200).send()
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
@@ -72,7 +74,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const todo = user.todos.find(todo => todo.id === id)
   todo.done = true
-  response.status(200).send()
+  return response.status(200).send()
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -86,7 +88,7 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   user.todos.splice(todoIndex, 1)
 
-  response.status(200).send()
+  return response.status(200).send()
 });
 
 module.exports = app;
